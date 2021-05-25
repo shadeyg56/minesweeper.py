@@ -1,6 +1,7 @@
 import random
 from tabulate import tabulate
 import os
+import datetime
 
 
 class Grid:
@@ -37,6 +38,8 @@ class Grid:
 
     def reveal(self, loc, flag):
         # the cell must not have been revealed
+        if self.first_move:
+            self.start_time = datetime.datetime.now()
         if loc not in self.visible:
             # add the cell to flagged cells
             if flag:
@@ -58,6 +61,7 @@ class Grid:
                     print("Game Over! You hit a mine.")
                     print(self.show())
                     self.alive = False
+                    self.end_time = datetime.datetime.now()
                     return
         # if the cell has already been flagged, and the user selected to flag it it will be unflagged.
         elif loc in self.flagged:
@@ -69,6 +73,7 @@ class Grid:
             print("Congratulations! You won.")
             print(self.show())
             self.alive = False
+            self.end_time = datetime.datetime.now()
         else:
             os.system("cls")
             print(f"Flags: {len(self.flagged)}/{self.mine_num}")
@@ -159,3 +164,9 @@ class Grid:
                             self.visible.append((nextx, nexty))
         for loc in queue:
             self.get_neighbors(loc)
+
+    def finish_time(self):
+        delta = self.end_time - self.start_time
+        minutes = int(delta.total_seconds() // 60)
+        sec = round(delta.total_seconds() - (minutes * 60))
+        return f"Time: {minutes}:{sec}"
