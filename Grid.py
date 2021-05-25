@@ -14,6 +14,7 @@ class Grid:
         # grid is generated upon init
         self.generate()
         self.alive = True
+        self.first_move = True
         # writes the grid to a .txt file, mostly for debugging purposes. Good for testing.
         txt = open("grid.txt", "w", encoding="utf-8")
         txt.write(self.show())
@@ -31,12 +32,7 @@ class Grid:
             if self.grid[y][x] != "X":
                 self.grid[y][x] = "X"
                 # loop through each neighboring cell and increment it by 1
-                for n in self.neighbors:
-                    nexty = n[1]+y
-                    nextx = n[0]+x
-                    if nexty < len(self.grid) and nextx < len(self.grid[y]):
-                        if self.grid[nexty][nextx] != "X" and nexty != -1 and nextx != -1:
-                            self.grid[nexty][nextx] += 1
+                self.replace_neighbors((x, y))
                 mines_placed += 1
 
     def reveal(self, loc, flag):
@@ -54,7 +50,11 @@ class Grid:
                 self.visible.append(loc)
             # if the cell is a mine and has not been flagged by the user, trigger game over
             if self.is_mine(loc):
-                if not flag:
+                # if mine hit on first turn, move it to the closest available space to the top left corner
+                if self.first_move:
+                    self.visible.remove(loc)
+                    self.move_mine(loc)
+                elif not flag:
                     print("Game Over! You hit a mine.")
                     print(self.show())
                     self.alive = False
@@ -73,12 +73,30 @@ class Grid:
             os.system("cls")
             print(f"Flags: {len(self.flagged)}/{self.mine_num}")
             print(self.visible_grid())
+            self.first_move = False
 
     def is_mine(self, loc):
         if self.grid[loc[1]][loc[0]] == "X":
             return True
         else:
             return False
+
+    # func to move mine if hit on first turn. moves it to the closest cell to the top left corner (cannot be occupied by a mine)
+    def move_mine(self, loc):
+        self.grid[loc[1]][loc[0]] = 0
+        self.replace_neighbors(loc, increase=False)
+        new_loc = (0, 0)
+        while self.grid[new_loc[1]][new_loc[0]] == "X":
+            new_loc = (new_loc[0]+1, new_loc[1])
+            if new_loc[0] == self.width-1:
+                new_loc = (0, new_loc[1]+1)
+        self.grid[new_loc[1]][new_loc[0]] = "X"
+        self.replace_neighbors(new_loc)
+        self.get_neighbors(loc)
+        txt = open("grid.txt", "w", encoding="utf-8")
+        txt.write(self.show())
+        txt.close()
+
 
     def game_won(self):
         # if num of visible cells equals the total number of cells, the game is won
@@ -106,6 +124,20 @@ class Grid:
     def show(self):
         table = tabulate(self.grid, headers=[str(i) for i in range(1, self.width+1)], tablefmt="fancy_grid", showindex=[i for i in range(1, self.height+1)], numalign="center", stralign="center")
         return table
+
+    # func to by default increment all neighbors of a cell. will decrement if increase=False
+    def replace_neighbors(self, loc, increase=True):
+        x = loc[0]
+        y = loc[1]
+        for n in self.neighbors:
+            nexty = n[1]+y
+            nextx = n[0]+x
+            if nexty < len(self.grid) and nextx < len(self.grid[y]):
+                if self.grid[nexty][nextx] != "X" and nexty != -1 and nextx != -1:
+                    if increase:
+                        self.grid[nexty][nextx] += 1
+                    else:
+                        self.grid[nexty][nextx] -= 1
 
     # reveals all neighbors of a zero-value cell. If said cell has a zero cell as a neighbor, it is added to the queue and later has its neighbors revealed
     # probably not the most inexpensive way to handle this, but works fine in this case.
