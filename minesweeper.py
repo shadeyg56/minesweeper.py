@@ -1,9 +1,6 @@
 from Grid import Grid
 import os
 
-grid = Grid(8, 8, 8)
-flag = False
-
 
 def user_input():
     print("To reveal a location, enter the column num, then row. Example \"5 4\"")
@@ -37,6 +34,7 @@ def select_difficulty():
         return difficulties[int(selected)]
 
 
+flag = False
 difficulty = select_difficulty()
 difficulties = {"Beginner": (8, 8, 8), "Intermediate": (16, 16, 40), "Expert": (30, 16, 99)}
 grid = Grid(*difficulties[difficulty])
@@ -59,3 +57,4 @@ while grid.alive:
         continue
     loc = (int(inp[0]) - 1, int(inp[1]) - 1)
     grid.reveal(loc, flag)
+print(grid.finish_time())
