@@ -48,6 +48,7 @@ class Grid:
                     self.visible.append(loc)
             # if the value of the cell is 0, reveal all of it's neighbors
             elif self.grid[loc[1]][loc[0]] == 0:
+                self.visible.append(loc)
                 self.get_neighbors(loc)
             else:
                 self.visible.append(loc)
