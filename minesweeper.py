@@ -1,5 +1,6 @@
 from Grid import Grid
 import os
+from string import ascii_lowercase
 
 
 def user_input():
@@ -39,6 +40,7 @@ difficulty = select_difficulty()
 difficulties = {"Beginner": (8, 8, 8), "Intermediate": (16, 16, 40), "Expert": (30, 16, 99)}
 grid = Grid(*difficulties[difficulty])
 print(grid.visible_grid())
+columns = {ascii_lowercase[i]: i for i in range(0, difficulties[difficulty][0] + 1)}
 while grid.alive:
     inp = user_input()
     if len(inp) > 2:
@@ -49,12 +51,15 @@ while grid.alive:
         continue
     else:
         flag = False
-    if not inp[1].isdigit or not inp[0].isdigit():
+    if not inp[1].isdigit():
         invalid_input()
         continue
-    if (int(inp[1])) > len(grid.grid) or (int(inp[0])) > len(grid.grid[0]):
+    if not len(inp[0]) == 1:
         invalid_input()
         continue
-    loc = (int(inp[0]) - 1, int(inp[1]) - 1)
+    if (int(inp[1])) > len(grid.grid) or not inp[0].lower() in columns:
+        invalid_input()
+        continue
+    loc = (columns[inp[0].lower()], int(inp[1]) - 1)
     grid.reveal(loc, flag)
 print(grid.finish_time())

@@ -2,6 +2,7 @@ import random
 from tabulate import tabulate
 import os
 import datetime
+from string import ascii_uppercase
 
 
 class Grid:
@@ -123,12 +124,16 @@ class Grid:
                         self.render[row][cell] = "F"
                     else:
                         self.render[row][cell] = self.grid[row][cell]
-        table = tabulate(self.render, headers=[str(i) for i in range(1, self.width+1)], tablefmt="fancy_grid", showindex=[i for i in range(1, self.height+1)], numalign="center", stralign="center")
+        headers = [ascii_uppercase[i] for i in range(0, self.width+1)]
+        headers.insert(0, "")
+        table = tabulate(self.render, headers=headers, tablefmt="fancy_grid", showindex=[i for i in range(1, self.height+1)], numalign="center", stralign="center")
         return table
 
     # shows the actual grid w/ real values in a table
     def show(self):
-        table = tabulate(self.grid, headers=[str(i) for i in range(1, self.width+1)], tablefmt="fancy_grid", showindex=[i for i in range(1, self.height+1)], numalign="center", stralign="center")
+        headers = [ascii_uppercase[i] for i in range(0, self.width+1)]
+        headers.insert(0, "")
+        table = tabulate(self.grid, headers=headers, tablefmt="fancy_grid", showindex=[i for i in range(1, self.height+1)], numalign="center", stralign="center")
         return table
 
     # func to by default increment all neighbors of a cell. will decrement if increase=False
