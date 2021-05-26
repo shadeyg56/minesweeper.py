@@ -4,8 +4,8 @@ from string import ascii_lowercase
 
 
 def user_input():
-    print("To reveal a location, enter the column num, then row. Example \"5 4\"")
-    print("To flag a mine, enter an f after the column num then row. Example \"3 2 f\"")
+    print("To reveal a location, enter the column letter, then row. Example \"A 4\"")
+    print("To flag a mine, enter an f after the column letter then row. Example \"E 2 f\"")
     inp = input("Enter a column, then row: ").split()
     return inp
 
