@@ -175,4 +175,5 @@ class Grid:
         delta = self.end_time - self.start_time
         minutes = int(delta.total_seconds() // 60)
         sec = round(delta.total_seconds() - (minutes * 60))
+        sec = str(sec).zfill(2)
         return f"Time: {minutes}:{sec}"
